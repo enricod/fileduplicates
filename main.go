@@ -37,7 +37,7 @@ func fileWalker( md5s map[string][]string) filepath.WalkFunc {
 			md5value := fmt.Sprintf("%x",  h.Sum(nil))
 			md5s[md5value] = append(md5s[md5value], path) // md5s[md5value] = path
 
-			fmt.Printf("%s \t-> %s \n", path, md5value)
+			// fmt.Printf("%s \t-> %s \n", path, md5value)
 		}
 		return nil
 	}
@@ -53,15 +53,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	totFiles := 0
 	for key, value := range md5s {
 		if len(value) > 1 {
 			// fmt.Println("Key:", key, " => ", len(value))
-			fmt.Println("Key:", key, " => ", len(value))
+			fmt.Println("MD5 =", key, ", found", len(value), "files")
 			for _, s := range value {
 				fmt.Printf("\t %s\n", s)
 			}
 		}
-
+		totFiles = totFiles + len(value)
 	}
+
+	fmt.Println("Files examined =", totFiles)
 }
 
