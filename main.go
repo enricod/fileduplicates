@@ -51,7 +51,7 @@ func main() {
 	for key, value := range md5s {
 		if len(value) > 1 {
 			// fmt.Println("Key:", key, " => ", len(value))
-			fmt.Println("Hash256 =", key, ", found", len(value), "files")
+			fmt.Println("Hash256 =", key, "| found", len(value), "files")
 			for _, s := range value {
 				fmt.Printf("\t %s\n", s)
 			}
