@@ -57,20 +57,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*
-		totFiles := 0
-		for key, value := range hashes {
-			if len(value) > 1 {
-				// fmt.Println("Key:", key, " => ", len(value))
-				fmt.Println("Hash256 =", key, "| found", len(value), "files")
-				for _, s := range value {
-					fmt.Printf("\t %s\n", s)
-				}
-			}
-			totFiles = totFiles + len(value)
-		}
-	*/
-
 	b, err := json.MarshalIndent(filtraHashesConPiuDiUnFile(hashes), "", "  ")
 	if err != nil {
 		fmt.Println("error:", err)
