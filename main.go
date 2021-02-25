@@ -1,20 +1,18 @@
 package main
 
 import (
+	"crypto/sha256"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"crypto/md5"
-	"io"
 	"strings"
 )
 
+func fileWalker(hashes map[string][]string) filepath.WalkFunc {
 
-
-func fileWalker( md5s map[string][]string) filepath.WalkFunc {
-
-	return func (path string, info os.FileInfo, err error) error {
+	return func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Print(err)
 			return nil
@@ -27,16 +25,12 @@ func fileWalker( md5s map[string][]string) filepath.WalkFunc {
 				return nil
 			}
 			defer f.Close()
-			h := md5.New()
+			h := sha256.New()
 			if _, err := io.Copy(h, f); err != nil {
-				fmt.Println(err)
-				return nil
+				log.Fatal(err)
 			}
-
-
-			md5value := fmt.Sprintf("%x",  h.Sum(nil))
-			md5s[md5value] = append(md5s[md5value], path) // md5s[md5value] = path
-
+			sha256Sum := fmt.Sprintf("%x", h.Sum(nil))
+			hashes[sha256Sum] = append(hashes[sha256Sum], path) // md5s[md5value] = path
 			// fmt.Printf("%s \t-> %s \n", path, md5value)
 		}
 		return nil
@@ -57,7 +51,7 @@ func main() {
 	for key, value := range md5s {
 		if len(value) > 1 {
 			// fmt.Println("Key:", key, " => ", len(value))
-			fmt.Println("MD5 =", key, ", found", len(value), "files")
+			fmt.Println("Hash256 =", key, ", found", len(value), "files")
 			for _, s := range value {
 				fmt.Printf("\t %s\n", s)
 			}
@@ -67,4 +61,3 @@ func main() {
 
 	fmt.Println("Files examined =", totFiles)
 }
-
