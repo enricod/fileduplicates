@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -37,27 +38,45 @@ func fileWalker(hashes map[string][]string) filepath.WalkFunc {
 	}
 }
 
+func filtraHashesConPiuDiUnFile(hashes map[string][]string) map[string][]string {
+	result := make(map[string][]string)
+	for key, value := range hashes {
+		if len(value) > 1 {
+			result[key] = value
+		}
+	}
+	return result
+}
 func main() {
 	log.SetFlags(log.Lshortfile)
 
-	md5s := make(map[string][]string)
+	hashes := make(map[string][]string)
 	dir := os.Args[1]
-	err := filepath.Walk(dir, fileWalker(md5s))
+	err := filepath.Walk(dir, fileWalker(hashes))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	totFiles := 0
-	for key, value := range md5s {
-		if len(value) > 1 {
-			// fmt.Println("Key:", key, " => ", len(value))
-			fmt.Println("Hash256 =", key, "| found", len(value), "files")
-			for _, s := range value {
-				fmt.Printf("\t %s\n", s)
+	/*
+		totFiles := 0
+		for key, value := range hashes {
+			if len(value) > 1 {
+				// fmt.Println("Key:", key, " => ", len(value))
+				fmt.Println("Hash256 =", key, "| found", len(value), "files")
+				for _, s := range value {
+					fmt.Printf("\t %s\n", s)
+				}
 			}
+			totFiles = totFiles + len(value)
 		}
-		totFiles = totFiles + len(value)
-	}
+	*/
 
-	fmt.Println("Files examined =", totFiles)
+	b, err := json.MarshalIndent(filtraHashesConPiuDiUnFile(hashes), "", "  ")
+	if err != nil {
+		fmt.Println("error:", err)
+	}
+	os.Stdout.Write(b)
+	os.Stdout.Write([]byte("\n"))
+
+	//fmt.Println("Files examined =", totFiles)
 }
